@@ -1,3 +1,6 @@
+
+properties([[$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/arunvarala/job4repo.git/'], pipelineTriggers([githubPush()])])
+
 node {
  	// Clean workspace before doing anything
     deleteDir()
