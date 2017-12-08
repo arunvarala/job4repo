@@ -1,33 +1,29 @@
+#!/usr/bin/env groovy
+properties([
+    [$class: 'GithubProjectProperty',
+    displayName: '',
+    projectUrlStr: 'http://52.207.55.50:8080'],
+    pipelineTriggers([githubPush()])])
 
-properties([[$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/arunvarala/job4repo.git/'], pipelineTriggers([githubPush()])])
-
-node {
- 	// Clean workspace before doing anything
-    deleteDir()
-
-    try {
-        stage ('Clone') {
-        	checkout scm
+pipeline {
+    agent {
+        label{
+            label 'Slavenode'
         }
-        stage ('Build') {
-        	sh "echo 'shell scripts to build project...arunvaralak'"
+    }
+             parameters {
+                            string(defaultValue: "default", description: 'Select Branch here ', name: 'Branch')
+                           // choices are newline separated
+                            choice(choices: 'Integration\nUnit', description: 'Used for posgress sh and codedeploy deployment group', name: 'Environment')
+                            booleanParam(name: 'REBUILD DATABASE', defaultValue: true, description: 'Should we rebuild the database')
+                            booleanParam(name: 'DEPLOY', defaultValue: true, description: 'should we deploy the application')
+             }
+    stages {
+        stage('Build') { 
+            steps { 
+                echo 'Hello'
+            }
         }
-        stage ('Tests') {
-	        parallel 'static': {
-	            sh "echo 'shell scripts to run static tests...'"
-	        },
-	        'unit': {
-	            sh "echo 'shell scripts to run unit tests...'"
-	        },
-	        'integration': {
-	            sh "echo 'shell scripts to run integration tests...'"
-	        }
-        }
-      	stage ('Deploy') {
-            sh "echo 'shell scripts to deploy to server...'"
-      	}
-    } catch (err) {
-        currentBuild.result = 'FAILED'
-        throw err
+      
     }
 }
